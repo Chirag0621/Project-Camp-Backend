@@ -21,11 +21,16 @@ app.use(
 
 
 // Import the routes
-import healthCheckRoute from "./routes/healthcheckup.routes.js";
-app.use("/api/v1/healthcheck", healthCheckRoute)
+import healthCheckRouter from "./routes/healthcheckup.routes.js";
+app.use("/api/v1/healthcheck", healthCheckRouter)
 
 app.get("/", (req, res) => {
   res.send("Welcome to basecampy");
 });
+
+import authRouter from "./routes/auth.routes.js"
+app.use("/api/v1/auth", authRouter)
+
+
 
 export default app;

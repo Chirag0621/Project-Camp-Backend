@@ -50,7 +50,7 @@ const userSchema = new Schema(
     },
 
     forgotPasswordToken: {
-      type: string
+      type: String
     },
     forgotPasswordExpiry: {
       type: Date
@@ -127,4 +127,4 @@ userSchema.methods.generateTemporaryToken = function(){
 }
 
 
-export const user = mongoose.model('User', userSchema);
+export const User = mongoose.model('User', userSchema);
