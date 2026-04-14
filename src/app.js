@@ -9,6 +9,10 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
+//CookieParser
+app.use(cookieParser())
+
+
 //cors configurations
 app.use(
   cors({
@@ -18,6 +22,8 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
+
+
 
 
 // Import the routes
