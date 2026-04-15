@@ -1,0 +1,1 @@
+const isPasswordValid = await user.isPasswordCorrect(password);

@@ -70,20 +70,39 @@ const userSchema = new Schema(
 
 
 // hooks 
-userSchema.pre("save", async function(next){
-  // in Ismodified we check the things which are being modified in this particular save
-  if(!this.isModified(this.password)) return next();
-  this.password = await bcrypt.hash(this.password, 10)
-  next()
-})
+userSchema.pre("save", async function(next) {
+  // Check whether password field is modified or not
+  if (!this.isModified("password")) return next();
+
+  // Hash only plain text passwords. If a bcrypt hash already exists, preserve it.
+  if (this.password && !this.password.startsWith("$2")) {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+
+  next();
+});
 
 
 //Method
-userSchema.methods.isPasswordCorrect = async function
-(password){
-  return await bcrypt.compare(password, this.password) // returns true if the password is correct 
-  // Password checking is done using hashing as if you are giving the correct password the hashing is same to the saved one...
-}
+userSchema.methods.isPasswordCorrect = async function(password) {
+  if (!password || !this.password) return false;
+
+  try {
+    const isMatch = await bcrypt.compare(password, this.password);
+    if (isMatch) return true;
+  } catch (err) {
+    // bcrypt.compare may fail if the stored password is not a valid hash.
+  }
+
+  // If the stored password is plain text, migrate it to a bcrypt hash on first successful login.
+  if (password === this.password) {
+    this.password = await bcrypt.hash(password, 10);
+    await this.save({ validateBeforeSave: false });
+    return true;
+  }
+
+  return false;
+};
 userSchema.methods.generateAccessToken = function(){
   return jwt.sign(
 

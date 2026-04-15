@@ -2,8 +2,7 @@ import { User } from '../models/user.models.js';
 import { ApiResponse } from '../utils/api-response.js';
 import { ApiError } from '../utils/api-error.js';
 import { asyncHandler } from '../utils/async-handler.js';
-import { emailVerificationMailgenContent, sendEmail } from '../utils/mail.js'
-
+import { emailVerificationMailgenContent, sendEmail } from '../utils/mail.js';
 
 const generateAccessandRefreshTokens = async (userId) => {
   try {
@@ -46,24 +45,21 @@ const registerUser = asyncHandler(async (req, res) => {
 
   await user.save({ validateBeforeSave: false });
 
-  await sendEmail(
-    {
-      email: user?.email,
-      subject: "Please verify your email",
-      mailgenContent: emailVerificationMailgenContent(
-        user.username,
-        `${user.protocol}://${req.get("host")}/api/v1/users/verify-email/${unhashedToken}`
-      )
-    }
+  await sendEmail({
+    email: user?.email,
+    subject: 'Please verify your email',
+    mailgenContent: emailVerificationMailgenContent(
+      user.username,
+      `${user.protocol}://${req.get('host')}/api/v1/users/verify-email/${unhashedToken}`
+    ),
+  });
+
+  const createdUser = await User.findById(user._id).select(
+    '-password -refreshToken -emailVerificationToken -emailVerificationExpiry'
   );
 
-  const createdUser = await User.findById(user._id).select("-password -refreshToken -emailVerificationToken -emailVerificationExpiry")
-
-  if(!createdUser){
-    throw new ApiError(
-      500,
-      "Something went wrong while registering the user"
-    )
+  if (!createdUser) {
+    throw new ApiError(500, 'Something went wrong while registering the user');
   }
 
   return res
@@ -71,58 +67,59 @@ const registerUser = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        {user: createdUser},
-        "User register successfully and verification email has been sent to your email"
+        { user: createdUser },
+        'User register successfully and verification email has been sent to your email'
       )
-    )
+    );
 });
 
-
 const login = asyncHandler(async (req, res) => {
-  const {email, password, username} = req.body();
+  const { email, password, username } = req.body;
 
-  if(!email){
-    throw new ApiError(400, "Username or email is required")
+  if (!email && !username) {
+    throw new ApiError(400, 'Username or email is required');
   }
 
-  const user = await User.findOne({email});
+  const user = await User.findOne({
+    $or: [{ email }, { username }],
+  });
 
-  if(!user){
-    throw new ApiError(400, "User does not exist")
+  if (!user) {
+    throw new ApiError(400, 'User does not exist');
   }
 
-  const isPasswordValid = await user.isPasswordCorrect(password)
+  const isPasswordValid = await user.isPasswordCorrect(password);
 
-  if(!isPasswordValid){
-    throw new ApiError(400, "Invalid credentials")
+  if (!isPasswordValid) {
+    throw new ApiError(400, 'Invalid credentials');
   }
 
-  const {accessToken, refreshToken} = generateAccessandRefreshTokens(user._id)
+  const { accessToken, refreshToken } = await generateAccessandRefreshTokens(user._id);
 
-
-  const loggedInUser = await User.findById(user._id).select("-password -refreshToken -emailVerificationToken -emailVerificationExpiry");
+  const loggedInUser = await User.findById(user._id).select(
+    '-password -refreshToken -emailVerificationToken -emailVerificationExpiry'
+  );
 
   const options = {
-    httponly: true,
+    httpOnly: true,
     secure: true,
-  }
+  };
 
   return res
-      .status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", refreshToken, options)
-      .json(
-        new ApiResponse(
-          200,
-          {
-            user: loggedInUser,
-            accessToken,
-            refreshToken
-          },
-          "User logged in successfully"
-        )
+    .status(200)
+    .cookie('accessToken', accessToken, options)
+    .cookie('refreshToken', refreshToken, options)
+    .json(
+      new ApiResponse(
+        200,
+        {
+          user: loggedInUser,
+          accessToken,
+          refreshToken,
+        },
+        'User logged in successfully'
       )
+    );
+});
 
-})
-
-export {registerUser, login} 
+export { registerUser, login };
