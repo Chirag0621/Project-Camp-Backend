@@ -1,14 +1,18 @@
 import { Router } from "express";
 
-import { registerUser } from "../controllers/auth.controllers.js";
+import { logoutUser, registerUser } from "../controllers/auth.controllers.js";
 import { login } from "../controllers/auth.controllers.js"; 
 import { validate } from "../middlewares/validator.middlewares.js";
 import { userRegisterValidator } from "../validators/index.js";
 import { userLoginValidator } from "../validators/index.js";
+import { verifyJWT } from "../middlewares/auth.middlewares.js"
 
 const router = Router();
 
 router.route("/register").post(userRegisterValidator(), validate, registerUser);
 router.route("/login").post(userLoginValidator(), validate, login);
+
+// secure route or protect route
+router.route("/logout").post(verifyJWT, logoutUser);
 
 export default router;
