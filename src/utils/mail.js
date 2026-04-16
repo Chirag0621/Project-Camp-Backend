@@ -62,7 +62,7 @@ const emailVerificationMailgenContent = (username, verificationUrl) => {
   };
 };
 
-const forgotPasswordVerificationMailgenContent = (username, passwordResetUrl) => {
+const forgotPasswordMailgenContent = (username, passwordResetUrl) => {
   return {
     body: {
       name: username,
