@@ -231,7 +231,7 @@ const getProjectMembers = asyncHandler(async (req, res) => {
 
 
 
-const UpdateMemberRole = asyncHandler(async (req, res) => {
+const updateMemberRole = asyncHandler(async (req, res) => {
   const {projectId, userId} = req.params
   const {newRole} = req.body
 
@@ -266,12 +266,31 @@ const UpdateMemberRole = asyncHandler(async (req, res) => {
 
 })
 
-const getMemberRole = asyncHandler(async (req, res) => {
-  
-})
-
 const deleteMember = asyncHandler(async (req, res) => {
-  //test
+  const {projectId, userId} = req.params
+  const {newRole} = req.body
+
+  let projectMember = await ProjectMember.findOne(
+    {
+      project: new mongoose.Types.ObjectId(projectId),
+      user: new mongoose.Types.ObjectId(userId)
+    }
+  )
+
+  if(!projectMember){
+    throw new ApiError(400, "Project member not found");
+  }
+
+  projectMember = await ProjectMember.findByIdAndDelete(
+    projectMember._id
+  )
+
+  if(!projectMember){
+    throw new ApiError(400, "Project member not found");
+  }
+
+  return res.status(200).json(new ApiResponse(200, projectMember, "Project member deleted successfully"));
+
 })
 
 export {
@@ -281,6 +300,7 @@ export {
   deleteProject,
   addMemberToProject,
   getProjectMembers,
-  getMemberRole,
+  getProjectById,
+  updateMemberRole,
   deleteMember
 }
