@@ -6,7 +6,7 @@ import { ApiResponse } from '../utils/api-response.js';
 import { ApiError } from '../utils/api-error.js';
 import { asyncHandler } from '../utils/async-handler.js';
 import mongoose from 'mongoose';
-import { UserRolesEnum } from '../utils/constants.js';
+import { AvailableUserRole, UserRolesEnum } from '../utils/constants.js';
 import { pipeline } from 'nodemailer/lib/xoauth2/index.js';
 
 
@@ -176,7 +176,7 @@ const getProjectById = asyncHandler(async (req, res) => {
   )
 })
 
-const getProjectMember = asyncHandler(async (req, res) => {
+const getProjectMembers = asyncHandler(async (req, res) => {
   const {projectId} = req.params
   const project = await Project.findById(projectId)
 
@@ -231,8 +231,39 @@ const getProjectMember = asyncHandler(async (req, res) => {
 
 
 
-const getMemberRole = asyncHandler(async (req, res) => {
-  
+const UpdateMemberRole = asyncHandler(async (req, res) => {
+  const {projectId, userId} = req.params
+  const {newRole} = req.body
+
+  if(!AvailableUserRole.includes(newRole)){
+    throw new ApiError(400, "Invalid role")
+  }
+
+  let projectMember = await ProjectMember.findOne(
+    {
+      project: new mongoose.Types.ObjectId(projectId),
+      user: new mongoose.Types.ObjectId(userId)
+    }
+  )
+
+  if(!projectMember){
+    throw new ApiError(400, "Project member not found");
+  }
+
+  projectMember = await ProjectMember.findByIdAndUpdate(
+    projectMember._id,
+    {
+      role: newRole
+    },
+    {new: true}
+  )
+
+  if(!projectMember){
+    throw new ApiError(400, "Project member not found");
+  }
+
+  return res.status(200).json(new ApiResponse(200, projectMember, "Project member role updated successfully"));
+
 })
 
 const getMemberRole = asyncHandler(async (req, res) => {
@@ -249,7 +280,7 @@ export {
   updateProject,
   deleteProject,
   addMemberToProject,
-  getProjectMember,
+  getProjectMembers,
   getMemberRole,
   deleteMember
 }
