@@ -20,4 +20,4 @@ const projectMemberSchema = new Schema({
 
 }, {timestamps: true})
 
-export const projectmember = moongoose.model("ProjectMember", projectMemberSchema);
+export const ProjectMember = mongoose.model("ProjectMember", projectMemberSchema);

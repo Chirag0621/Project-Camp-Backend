@@ -13,11 +13,11 @@ const projectSchema = new Schema(
     type: String,
   },
   createdBy: {
-    typeof: Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "User",
     required: true
   }
 
 } , {timestamps: true})
 
-export const project = moongoose.model("Project", projectSchema);
+export const Project = mongoose.model("Project", projectSchema);
