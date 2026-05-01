@@ -5,8 +5,9 @@ import { Subtask } from '../models/subtask.model.js';
 import { ApiResponse } from '../utils/api-response.js';
 import { ApiError } from '../utils/api-error.js';
 import { asyncHandler } from '../utils/async-handler.js';
-import mongoose, { mongo } from 'mongoose';
+import mongoose from 'mongoose';
 import { AvailableUserRole, UserRolesEnum } from '../utils/constants.js';
+import { pipeline } from 'nodemailer/lib/xoauth2/index.js';
 
 const createTask = asyncHandler(async(req, res) => {
   const {title, description, assignedTo, status} = req.body
@@ -40,7 +41,80 @@ const createTask = asyncHandler(async(req, res) => {
 });
 
 const getTaskById = asyncHandler(async(req, res) => {
+  const {taskId} = req.params
+  const task = await Task.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(taskId)
+      }
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "assignedTo",
+        foreignFeild: "_id",
+        as: "assignedTo",
+        pipeline: [
+          {
+            _id: 1,
+            username: 1,
+            fullName: 1,
+            avatar: 1,
 
+          }
+        ]
+      }
+    },
+    {
+      $lookup: {
+        from: "subtasks",
+        localField: "_id",
+        foreignFeild: "task",
+        as: "subtasks",
+        pipeline: [
+          {
+            $lookup: {
+              from: "users",
+              localField: "createdBy",
+              foreignFeild: "_id",
+              as: "createdBy",
+              pipeline: [
+                {
+                  $project: {
+                    _id: 1,
+                    username: 1,
+                    fullName: 1,
+                    avatar: 1,
+                  }
+                },
+                {
+                  addFeilds: {
+                    createdBy: {
+                      $arrayElemAt: ["$createdBy", 0]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      
+    },
+    {
+      $addFeilds: {
+        assignedTo: {
+          $arrayElemAt: ["assignedTo", 0]
+        }
+      }
+    }
+  ]);
+
+  if(!task || task.length === 0){
+    throw new ApiError(404, "Task not found");
+  }
+
+  return res.status(200).json(new ApiResponse(200, task, "Task fetched successfully"))
 })
 const getTasks = asyncHandler(async(req, res) => {
   const {projectId} = req.params;
