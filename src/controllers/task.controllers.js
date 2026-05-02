@@ -140,7 +140,7 @@ const createSubTasks = asyncHandler(async(req, res) => {
   //chai
 })
 const updateSubTask = asyncHandler(async(req, res) => {
-  //chai
+
 })
 const deleteSubTask = asyncHandler(async(req, res) => {
   //chai
