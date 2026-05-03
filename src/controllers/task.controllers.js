@@ -152,7 +152,7 @@ export {
   deleteTasks,
   deleteSubTask,
   getTaskById,
-  getTasks,
+  getTasks,   
   updateSubTask,
   updateTask
 }
