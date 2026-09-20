@@ -37,8 +37,25 @@ app.get("/", (req, res) => {
 import authRouter from "./routes/auth.routes.js"
 app.use("/api/v1/auth", authRouter)
 
-import projectRouter from "./routes/project.routes.js"
-app.use("/api/v1/projects", projectRouter)
+import projectRouter from "./routes/project.routes.js";
+app.use("/api/v1/projects", projectRouter);
 
+import taskRouter from "./routes/task.routes.js";
+app.use("/api/v1/tasks", taskRouter);
+
+import noteRouter from "./routes/note.routes.js";
+app.use("/api/v1/notes", noteRouter);
+
+// Global Error Handling Middleware
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  return res.status(statusCode).json({
+    statusCode,
+    data: err.data || null,
+    message: err.message || "Something went wrong",
+    success: false,
+    errors: err.errors || [],
+  });
+});
 
 export default app;
