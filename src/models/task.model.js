@@ -26,7 +26,7 @@ const taskSchema = new Schema({
   status:{
     type: String,
     enum: AvailableTaskStatus,
-    default: TaskStatusEnum
+    default: TaskStatusEnum.TODO
   },
   attachments:{
     type: [{
@@ -40,4 +40,4 @@ const taskSchema = new Schema({
 
 }, {timestamps: true})
 
-export const Task = mongoose.model("Task", task);
+export const Task = mongoose.model("Task", taskSchema);

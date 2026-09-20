@@ -18,10 +18,21 @@ const subtaskSchema = new Schema({
   createBy: {
     type: Schema.Types.ObjectId,
     ref: "User",
-    required: true
+  },
+  createdBy: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
   }
-
 }, {timestamps: true})
+
+subtaskSchema.pre("save", function(next) {
+  if (this.createdBy && !this.createBy) {
+    this.createBy = this.createdBy;
+  } else if (this.createBy && !this.createdBy) {
+    this.createdBy = this.createBy;
+  }
+  next();
+});
 
 
 export const Subtask = mongoose.model("Subtask", subtaskSchema)
