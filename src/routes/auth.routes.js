@@ -38,7 +38,10 @@ router
 
 // secure route or protect route
 router.route('/logout').post(verifyJWT, logoutUser);
-router.route('/current-user').post(verifyJWT, getCurrentUser);
+router
+  .route('/current-user')
+  .get(verifyJWT, getCurrentUser)
+  .post(verifyJWT, getCurrentUser);
 router
   .route('/change-password')
   .post(verifyJWT, userChangeCurrentPasswordValidator(), validate, changeCurrentPassword);
