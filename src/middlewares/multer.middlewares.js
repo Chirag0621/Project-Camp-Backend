@@ -9,9 +9,18 @@ const storage = multer.diskStorage({
   }
 })
 
-export const uplaod = multer({
+import fs from "fs";
+
+const uploadDir = "./public/images";
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+export const upload = multer({
   storage,
   limits: {
-    fileSize: 1 * 1000 * 1000
-  }
-})
+    fileSize: 1 * 1000 * 1000,
+  },
+});
+
+export const uplaod = upload;
