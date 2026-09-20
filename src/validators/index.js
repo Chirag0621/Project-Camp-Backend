@@ -1,6 +1,5 @@
 import { body } from "express-validator";
-import {AvailableUserRole} from "../utils/constants.js"
-
+import { AvailableUserRole, AvailableTaskStatus } from "../utils/constants.js";
 
 const userRegisterValidator = () => {
   //Remember this syntax
@@ -92,6 +91,84 @@ const addMembertoProjectValidator = () => {
   ]
 }
 
+const createTaskValidator = () => {
+  return [
+    body("title")
+      .trim()
+      .notEmpty()
+      .withMessage("Title is required"),
+    body("description").optional().trim(),
+    body("status")
+      .optional()
+      .isIn(AvailableTaskStatus)
+      .withMessage("Status is invalid"),
+    body("assignedTo")
+      .optional()
+      .isMongoId()
+      .withMessage("Invalid assignedTo user ID"),
+  ];
+};
+
+const updateTaskValidator = () => {
+  return [
+    body("title")
+      .optional()
+      .trim()
+      .notEmpty()
+      .withMessage("Title cannot be empty"),
+    body("description").optional().trim(),
+    body("status")
+      .optional()
+      .isIn(AvailableTaskStatus)
+      .withMessage("Status is invalid"),
+    body("assignedTo")
+      .optional()
+      .isMongoId()
+      .withMessage("Invalid assignedTo user ID"),
+  ];
+};
+
+const createSubTaskValidator = () => {
+  return [
+    body("title")
+      .trim()
+      .notEmpty()
+      .withMessage("Title is required"),
+  ];
+};
+
+const updateSubTaskValidator = () => {
+  return [
+    body("title")
+      .optional()
+      .trim()
+      .notEmpty()
+      .withMessage("Title cannot be empty"),
+    body("isCompleted")
+      .optional()
+      .isBoolean()
+      .withMessage("isCompleted must be a boolean"),
+  ];
+};
+
+const createNoteValidator = () => {
+  return [
+    body("content")
+      .trim()
+      .notEmpty()
+      .withMessage("Content is required"),
+  ];
+};
+
+const updateNoteValidator = () => {
+  return [
+    body("content")
+      .trim()
+      .notEmpty()
+      .withMessage("Content is required"),
+  ];
+};
+
 export {
   userRegisterValidator,
   userLoginValidator,
@@ -100,5 +177,10 @@ export {
   userResetForgotPasswordValidator,
   createProjectValidator,
   addMembertoProjectValidator,
-
-}
+  createTaskValidator,
+  updateTaskValidator,
+  createSubTaskValidator,
+  updateSubTaskValidator,
+  createNoteValidator,
+  updateNoteValidator,
+};
