@@ -37,6 +37,7 @@ export const TaskModal = ({
   const [files, setFiles] = useState([]);
   const [existingAttachments, setExistingAttachments] = useState([]);
   const [subtasks, setSubtasks] = useState([]);
+  const [draftSubtask, setDraftSubtask] = useState('');
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const { success, error } = useToast();
@@ -67,6 +68,7 @@ export const TaskModal = ({
 
   useEffect(() => {
     if (isOpen) {
+      setDraftSubtask('');
       if (taskId) {
         fetchTaskDetails();
       } else {
@@ -107,14 +109,26 @@ export const TaskModal = ({
         formData.append('attachments', file);
       });
 
+      let savedTaskId = taskId;
       if (isEdit) {
         await taskService.updateTask(projectId, taskId, formData);
-        success('Task updated successfully!');
       } else {
-        await taskService.createTask(projectId, formData);
-        success('Task created successfully!');
+        const createRes = await taskService.createTask(projectId, formData);
+        savedTaskId = createRes.data?._id;
       }
 
+      // If user typed a subtask and clicked Save Changes, auto-create it
+      if (draftSubtask && draftSubtask.trim() && savedTaskId) {
+        try {
+          await taskService.createSubTask(projectId, savedTaskId, {
+            title: draftSubtask.trim(),
+          });
+        } catch {
+          // Task itself was updated successfully
+        }
+      }
+
+      success(isEdit ? 'Task updated successfully!' : 'Task created successfully!');
       onTaskUpdated();
       onClose();
     } catch (err) {
@@ -163,7 +177,7 @@ export const TaskModal = ({
         />
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+          <label className="text-xs font-semibold text-[#0e1116] tracking-tight">
             Description
           </label>
           <textarea
@@ -172,20 +186,20 @@ export const TaskModal = ({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             disabled={!canEdit || saving}
-            className="w-full rounded-xl bg-slate-900/70 border border-slate-800 text-slate-100 text-sm placeholder:text-slate-500 p-3 focus:outline-none focus:ring-2 focus:border-indigo-500 focus:ring-indigo-500/20 resize-none disabled:opacity-60"
+            className="w-full rounded-2xl bg-[#f8fafc] border border-[#e5e8ec] text-[#0e1116] text-sm placeholder:text-[#9ca3af] p-3.5 focus:outline-none focus:bg-white focus:ring-2 focus:border-[#0d0f14] focus:ring-black/5 resize-none disabled:opacity-60 transition-all"
           />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+            <label className="text-xs font-semibold text-[#0e1116] tracking-tight">
               Status
             </label>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
               disabled={!canEdit || saving}
-              className="w-full rounded-xl bg-slate-900/90 border border-slate-800 text-slate-100 text-sm py-2.5 px-3 focus:outline-none focus:ring-2 focus:border-indigo-500 focus:ring-indigo-500/20 disabled:opacity-60"
+              className="w-full rounded-2xl bg-[#f8fafc] border border-[#e5e8ec] text-[#0e1116] text-sm py-2.5 px-3.5 focus:outline-none focus:bg-white focus:ring-2 focus:border-[#0d0f14] focus:ring-black/5 disabled:opacity-60 transition-all"
             >
               {Object.entries(TASK_STATUS_CONFIG).map(([key, config]) => (
                 <option key={key} value={key}>
@@ -196,14 +210,14 @@ export const TaskModal = ({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+            <label className="text-xs font-semibold text-[#0e1116] tracking-tight">
               Assignee
             </label>
             <select
               value={assignedTo}
               onChange={(e) => setAssignedTo(e.target.value)}
               disabled={!canEdit || saving}
-              className="w-full rounded-xl bg-slate-900/90 border border-slate-800 text-slate-100 text-sm py-2.5 px-3 focus:outline-none focus:ring-2 focus:border-indigo-500 focus:ring-indigo-500/20 disabled:opacity-60"
+              className="w-full rounded-2xl bg-[#f8fafc] border border-[#e5e8ec] text-[#0e1116] text-sm py-2.5 px-3.5 focus:outline-none focus:bg-white focus:ring-2 focus:border-[#0d0f14] focus:ring-black/5 disabled:opacity-60 transition-all"
             >
               <option value="">Unassigned</option>
               {members.map((m) => {
@@ -220,8 +234,8 @@ export const TaskModal = ({
 
         {/* Existing Attachments */}
         {existingAttachments.length > 0 && (
-          <div className="flex flex-col gap-1.5 pt-2 border-t border-slate-800/80">
-            <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+          <div className="flex flex-col gap-1.5 pt-2 border-t border-[#f0f2f5]">
+            <label className="text-xs font-semibold text-[#0e1116] tracking-tight">
               Attachments ({existingAttachments.length})
             </label>
             <div className="flex flex-wrap gap-2">
@@ -231,16 +245,16 @@ export const TaskModal = ({
                   href={att.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-indigo-500/40 text-xs text-indigo-300 hover:text-indigo-200 transition-all group"
+                  className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white border border-[#e5e8ec] hover:border-[#0d0f14] text-xs text-[#0e1116] transition-all group shadow-xs"
                 >
-                  <FileText className="w-4 h-4 text-slate-400 group-hover:text-indigo-400" />
-                  <span className="truncate max-w-[140px]">
+                  <FileText className="w-4 h-4 text-[#64748b] group-hover:text-[#0d0f14]" />
+                  <span className="truncate max-w-[140px] font-medium">
                     {att.url.split('/').pop()}
                   </span>
-                  <span className="text-[10px] text-slate-500">
+                  <span className="text-[10px] text-[#9ca3af]">
                     ({formatFileSize(att.size)})
                   </span>
-                  <ExternalLink className="w-3 h-3 text-slate-500" />
+                  <ExternalLink className="w-3 h-3 text-[#9ca3af]" />
                 </a>
               ))}
             </div>
@@ -249,9 +263,9 @@ export const TaskModal = ({
 
         {/* File Attachments Upload Input */}
         {canEdit && (
-          <div className="flex flex-col gap-1.5 pt-2 border-t border-slate-800/80">
-            <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-              <Paperclip className="w-3.5 h-3.5 text-slate-400" />
+          <div className="flex flex-col gap-1.5 pt-2 border-t border-[#f0f2f5]">
+            <label className="text-xs font-semibold text-[#0e1116] tracking-tight flex items-center gap-1.5">
+              <Paperclip className="w-3.5 h-3.5 text-[#64748b]" />
               <span>Upload Attachments</span>
             </label>
             <input
@@ -259,26 +273,28 @@ export const TaskModal = ({
               multiple
               onChange={handleFileChange}
               disabled={saving}
-              className="text-xs text-slate-400 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-600/20 file:text-indigo-300 hover:file:bg-indigo-600/30 file:cursor-pointer"
+              className="text-xs text-[#64748b] file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#f1f3f6] file:text-[#0e1116] hover:file:bg-[#e5e8ec] file:cursor-pointer transition-all"
             />
           </div>
         )}
 
         {/* Subtasks checklist */}
         {isEdit && (
-          <div className="pt-3 border-t border-slate-800/80">
+          <div className="pt-3 border-t border-[#f0f2f5]">
             <SubtaskList
               projectId={projectId}
               taskId={taskId}
               subtasks={subtasks}
               onSubtasksUpdated={fetchTaskDetails}
               canManageSubtasks={canEdit}
+              draftTitle={draftSubtask}
+              onDraftSubtaskChange={setDraftSubtask}
             />
           </div>
         )}
 
         {/* Modal Actions */}
-        <div className="flex items-center justify-between pt-4 mt-2 border-t border-slate-800">
+        <div className="flex items-center justify-between pt-4 mt-2 border-t border-[#f0f2f5]">
           <div>
             {isEdit && canEdit && (
               <Button

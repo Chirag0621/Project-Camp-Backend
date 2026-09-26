@@ -10,8 +10,8 @@ export const Spinner = ({ size = 'md', className = '', text = '' }) => {
 
   return (
     <div className={`flex flex-col items-center justify-center gap-3 ${className}`}>
-      <Loader2 className={`animate-spin text-indigo-500 ${sizeClasses[size]}`} />
-      {text && <span className="text-xs text-slate-400 font-medium">{text}</span>}
+      <Loader2 className={`animate-spin text-[#0d0f14] ${sizeClasses[size]}`} />
+      {text && <span className="text-xs text-[#64748b] font-medium">{text}</span>}
     </div>
   );
 };

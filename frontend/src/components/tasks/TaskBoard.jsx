@@ -51,13 +51,13 @@ export const TaskBoard = ({
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3 w-full sm:w-auto flex-1 max-w-md">
           <div className="relative w-full">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-[#9ca3af] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               placeholder="Search tasks..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-xl bg-slate-900/80 border border-slate-800 text-slate-100 text-sm pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:border-indigo-500 focus:ring-indigo-500/20"
+              className="w-full rounded-2xl bg-white border border-[#e5e8ec] text-[#0e1116] placeholder:text-[#9ca3af] text-sm pl-10 pr-4 py-2.5 shadow-sm focus:outline-none focus:ring-2 focus:border-[#0d0f14] focus:ring-black/5 transition-all"
             />
           </div>
 
@@ -65,7 +65,7 @@ export const TaskBoard = ({
             <select
               value={assigneeFilter}
               onChange={(e) => setAssigneeFilter(e.target.value)}
-              className="w-full rounded-xl bg-slate-900/80 border border-slate-800 text-slate-100 text-xs py-2.5 px-3 focus:outline-none focus:ring-2 focus:border-indigo-500"
+              className="w-full rounded-2xl bg-white border border-[#e5e8ec] text-[#0e1116] text-xs py-2.5 px-3.5 shadow-sm focus:outline-none focus:ring-2 focus:border-[#0d0f14] focus:ring-black/5 transition-all"
             >
               <option value="all">All Assignees</option>
               <option value="unassigned">Unassigned</option>
@@ -101,16 +101,16 @@ export const TaskBoard = ({
           return (
             <div
               key={col.id}
-              className={`glass-panel rounded-2xl p-4 border border-slate-800/80 border-t-2 ${col.headerColor} flex flex-col gap-3 min-h-[420px]`}
+              className={`bg-[#f8f9fb] rounded-3xl p-4 border border-[#e5e8ec] border-t-4 ${col.headerColor} flex flex-col gap-3 min-h-[440px] shadow-xs`}
             >
               {/* Column Header */}
-              <div className="flex items-center justify-between pb-2 border-b border-slate-800/60">
+              <div className="flex items-center justify-between pb-2.5 border-b border-[#e5e8ec]/80">
                 <div className="flex items-center gap-2">
                   <span className={`w-2 h-2 rounded-full ${col.dotColor}`} />
-                  <span className="font-semibold text-sm text-slate-200">
+                  <span className="font-bold text-sm text-[#0e1116]">
                     {col.label}
                   </span>
-                  <span className="text-xs font-bold text-slate-400 px-2 py-0.5 rounded-full bg-slate-800/80">
+                  <span className="text-xs font-bold text-[#64748b] px-2.5 py-0.5 rounded-full bg-white border border-[#e5e8ec] shadow-xs">
                     {colTasks.length}
                   </span>
                 </div>
@@ -118,7 +118,7 @@ export const TaskBoard = ({
                 {canCreate && (
                   <button
                     onClick={() => onNewTaskClick(col.id)}
-                    className="p-1 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
+                    className="p-1.5 rounded-full text-[#64748b] hover:text-[#0e1116] hover:bg-[#eceef2] transition-colors"
                     title={`Add task to ${col.label}`}
                   >
                     <Plus className="w-4 h-4" />
@@ -129,7 +129,7 @@ export const TaskBoard = ({
               {/* Task Cards Column List */}
               <div className="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-280px)] pr-0.5">
                 {colTasks.length === 0 ? (
-                  <div className="p-8 text-center border-2 border-dashed border-slate-800/60 rounded-xl text-xs text-slate-500 flex flex-col items-center gap-2 my-auto">
+                  <div className="p-8 text-center border-2 border-dashed border-[#e2e6eb] bg-white/50 rounded-2xl text-xs text-[#9ca3af] flex flex-col items-center gap-2 my-auto">
                     <span>No tasks in {col.label}</span>
                   </div>
                 ) : (

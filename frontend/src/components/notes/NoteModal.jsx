@@ -63,7 +63,7 @@ export const NoteModal = ({
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+          <label className="text-xs font-semibold text-[#0e1116] tracking-tight">
             Note Content *
           </label>
           <textarea
@@ -73,11 +73,11 @@ export const NoteModal = ({
             onChange={(e) => setContent(e.target.value)}
             disabled={saving}
             autoFocus
-            className="w-full rounded-xl bg-slate-900/70 border border-slate-800 text-slate-100 text-sm placeholder:text-slate-500 p-3 focus:outline-none focus:ring-2 focus:border-indigo-500 focus:ring-indigo-500/20 resize-none"
+            className="w-full rounded-2xl bg-[#f8fafc] border border-[#e5e8ec] text-[#0e1116] text-sm placeholder:text-[#9ca3af] p-3.5 focus:outline-none focus:bg-white focus:ring-2 focus:border-[#0d0f14] focus:ring-black/5 resize-none transition-all"
           />
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+        <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#f0f2f5]">
           <Button variant="ghost" onClick={onClose} disabled={saving}>
             Cancel
           </Button>

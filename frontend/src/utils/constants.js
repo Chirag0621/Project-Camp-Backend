@@ -13,35 +13,36 @@ export const TaskStatusEnum = {
 export const TASK_STATUS_CONFIG = {
   [TaskStatusEnum.TODO]: {
     label: 'To Do',
-    color: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-    dotColor: 'bg-amber-400',
-    headerColor: 'border-t-amber-500',
+    color: 'bg-[#f1f3f6] text-[#4b5563] border-[#e2e6eb]',
+    dotColor: 'bg-[#9ca3af]',
+    headerColor: 'border-t-[#9ca3af]',
   },
   [TaskStatusEnum.IN_PROGRESS]: {
     label: 'In Progress',
-    color: 'bg-sky-500/10 text-sky-400 border-sky-500/20',
-    dotColor: 'bg-sky-400',
-    headerColor: 'border-t-sky-500',
+    color: 'bg-[#e6fd53]/40 text-[#0d0f14] border-[#d4ed34]',
+    dotColor: 'bg-[#0d0f14]',
+    headerColor: 'border-t-[#e6fd53]',
   },
   [TaskStatusEnum.DONE]: {
     label: 'Done',
-    color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-    dotColor: 'bg-emerald-400',
-    headerColor: 'border-t-emerald-500',
+    color: 'bg-[#0d0f14] text-[#e6fd53] border-[#1c202a]',
+    dotColor: 'bg-[#e6fd53]',
+    headerColor: 'border-t-[#0d0f14]',
   },
 };
 
 export const ROLE_CONFIG = {
   [UserRolesEnum.ADMIN]: {
     label: 'Admin',
-    badge: 'bg-rose-500/15 text-rose-300 border-rose-500/30',
+    badge: 'bg-[#0d0f14] text-white border-transparent',
   },
   [UserRolesEnum.PROJECT_ADMIN]: {
     label: 'Project Admin',
-    badge: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30',
+    badge: 'bg-[#e6fd53] text-[#0d0f14] border-[#d4ed34]',
   },
   [UserRolesEnum.MEMBER]: {
     label: 'Member',
-    badge: 'bg-slate-500/15 text-slate-300 border-slate-500/30',
+    badge: 'bg-[#f1f3f6] text-[#4b5563] border-[#e2e6eb]',
   },
 };
+

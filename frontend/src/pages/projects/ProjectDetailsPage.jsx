@@ -161,13 +161,13 @@ export const ProjectDetailsPage = () => {
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate('/dashboard')}
-          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-slate-200 transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-[#64748b] hover:text-[#0e1116] transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Projects</span>
         </button>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <Button
             variant="secondary"
             size="sm"
@@ -191,28 +191,28 @@ export const ProjectDetailsPage = () => {
       </div>
 
       {/* Project Header Banner */}
-      <div className="glass-panel rounded-2xl p-6 border border-slate-800 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="bento-card bg-white rounded-3xl p-7 border border-[#e5e8ec] flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-100 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0e1116] tracking-tight">
               {project.name}
             </h1>
             <Badge className={roleMeta.badge}>{roleMeta.label}</Badge>
           </div>
-          <p className="text-xs sm:text-sm text-slate-400 max-w-3xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#64748b] max-w-3xl leading-relaxed">
             {project.description || 'No description provided for this project.'}
           </p>
         </div>
       </div>
 
-      {/* Tabs Switcher */}
-      <div className="flex items-center gap-2 border-b border-slate-800">
+      {/* Pill Tabs Switcher */}
+      <div className="flex items-center gap-2">
         <button
           onClick={() => setActiveTab('tasks')}
-          className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-all ${
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all select-none ${
             activeTab === 'tasks'
-              ? 'border-indigo-500 text-indigo-400'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
+              ? 'bg-[#0d0f14] text-white shadow-sm'
+              : 'bg-white hover:bg-[#f1f3f6] text-[#4b5563] border border-[#e5e8ec]'
           }`}
         >
           <CheckSquare className="w-4 h-4" />
@@ -221,10 +221,10 @@ export const ProjectDetailsPage = () => {
 
         <button
           onClick={() => setActiveTab('notes')}
-          className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-all ${
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all select-none ${
             activeTab === 'notes'
-              ? 'border-indigo-500 text-indigo-400'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
+              ? 'bg-[#0d0f14] text-white shadow-sm'
+              : 'bg-white hover:bg-[#f1f3f6] text-[#4b5563] border border-[#e5e8ec]'
           }`}
         >
           <FileText className="w-4 h-4" />
@@ -245,7 +245,7 @@ export const ProjectDetailsPage = () => {
       ) : (
         <div className="flex flex-col gap-5">
           <div className="flex items-center justify-between">
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[#64748b]">
               Shared documentation, guidelines, and project specifications.
             </p>
             {isAdmin && (
@@ -261,12 +261,14 @@ export const ProjectDetailsPage = () => {
           </div>
 
           {notes.length === 0 ? (
-            <div className="glass-panel rounded-2xl p-12 text-center flex flex-col items-center justify-center my-6 border border-slate-800">
-              <FileText className="w-10 h-10 text-slate-500 mb-3" />
-              <h3 className="text-base font-bold text-slate-300">
+            <div className="bento-card bg-white rounded-3xl p-12 text-center flex flex-col items-center justify-center my-4 border border-[#e5e8ec]">
+              <div className="w-14 h-14 rounded-2xl bg-[#f1f3f6] border border-[#e5e8ec] text-[#0e1116] flex items-center justify-center mb-3.5">
+                <FileText className="w-7 h-7" />
+              </div>
+              <h3 className="text-base font-bold text-[#0e1116]">
                 No project notes yet
               </h3>
-              <p className="text-xs text-slate-500 mt-1 max-w-sm">
+              <p className="text-xs text-[#64748b] mt-1 max-w-sm">
                 {isAdmin
                   ? 'Create notes to share important requirements, architecture notes, or meeting summaries.'
                   : 'Your project administrators have not posted any notes yet.'}

@@ -375,6 +375,76 @@ const changeCurrentPassword = asyncHandler(async(req, res) => {
 
 })
 
+const googleLoginOrSignup = asyncHandler(async (req, res) => {
+  const { email, fullName, avatar } = req.body;
+
+  if (!email || !email.trim()) {
+    throw new ApiError(400, 'Email is required for Google authentication');
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+
+  // Check if user already exists
+  let user = await User.findOne({ email: normalizedEmail });
+
+  if (!user) {
+    // Generate a unique base username from email or name
+    let baseUsername = (fullName || normalizedEmail.split('@')[0])
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '');
+    if (baseUsername.length < 3) baseUsername = 'user' + baseUsername;
+
+    let uniqueUsername = baseUsername;
+    let counter = 1;
+    while (await User.findOne({ username: uniqueUsername })) {
+      uniqueUsername = `${baseUsername}${counter}`;
+      counter++;
+    }
+
+    // Generate secure random password for OAuth user
+    const randomPassword = crypto.randomBytes(24).toString('hex');
+
+    user = await User.create({
+      email: normalizedEmail,
+      username: uniqueUsername,
+      fullName: fullName?.trim() || normalizedEmail.split('@')[0],
+      password: randomPassword,
+      isEmailVerified: true,
+      avatar: {
+        url: avatar || 'https://placehold.co/200x200',
+        localPath: '',
+      },
+    });
+  }
+
+  const { accessToken, refreshToken } = await generateAccessandRefreshTokens(user._id);
+
+  const loggedInUser = await User.findById(user._id).select(
+    '-password -refreshToken -emailVerificationToken -emailVerificationExpiry'
+  );
+
+  const options = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+  };
+
+  return res
+    .status(200)
+    .cookie('accessToken', accessToken, options)
+    .cookie('refreshToken', refreshToken, options)
+    .json(
+      new ApiResponse(
+        200,
+        {
+          user: loggedInUser,
+          accessToken,
+          refreshToken,
+        },
+        'Authenticated with Google successfully'
+      )
+    );
+});
+
 export { 
   registerUser,
   login,
@@ -386,5 +456,5 @@ export {
   forgotPasswordRequest,
   resetForgotPassword,
   changeCurrentPassword,
-
+  googleLoginOrSignup,
 };

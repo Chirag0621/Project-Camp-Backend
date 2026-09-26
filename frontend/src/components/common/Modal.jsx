@@ -26,25 +26,25 @@ export const Modal = ({
       {/* Backdrop */}
       <div
         onClick={onClose}
-        className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm transition-opacity animate-in fade-in"
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity animate-in fade-in"
       />
 
       {/* Modal Dialog */}
       <div
-        className={`relative w-full ${maxWidth} glass-panel rounded-2xl p-6 shadow-2xl z-10 border border-slate-700/60 transition-all duration-300 animate-in zoom-in-95 fade-in max-h-[90vh] flex flex-col`}
+        className={`relative w-full ${maxWidth} bg-white rounded-3xl p-6 sm:p-7 shadow-2xl z-10 border border-[#e5e8ec] transition-all duration-300 animate-in zoom-in-95 fade-in max-h-[90vh] flex flex-col`}
       >
-        <div className="flex items-start justify-between pb-4 border-b border-slate-800">
+        <div className="flex items-start justify-between pb-4 border-b border-[#f0f2f5]">
           <div>
             {title && (
-              <h3 className="text-lg font-bold text-slate-100">{title}</h3>
+              <h3 className="text-xl font-bold text-[#0e1116] tracking-tight">{title}</h3>
             )}
             {description && (
-              <p className="text-xs text-slate-400 mt-1">{description}</p>
+              <p className="text-xs text-[#64748b] mt-1">{description}</p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-200 p-1 rounded-lg hover:bg-slate-800 transition-colors"
+            className="text-[#9ca3af] hover:text-[#0e1116] p-1.5 rounded-full hover:bg-[#f1f3f6] transition-colors"
           >
             <X className="w-5 h-5" />
           </button>

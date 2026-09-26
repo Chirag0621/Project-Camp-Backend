@@ -30,7 +30,7 @@ router.route('/').get(getProjects).post(createProjectValidator(), validate, crea
 
 router
   .route('/:projectId')
-  .get(validateProjectPermission([UserRolesEnum.ADMIN]), getProjectById)
+  .get(validateProjectPermission(AvailableUserRole), getProjectById)
   .put(
     validateProjectPermission([UserRolesEnum.ADMIN]),
     createProjectValidator(),

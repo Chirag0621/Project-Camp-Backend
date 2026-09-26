@@ -115,12 +115,12 @@ const getProjects = asyncHandler(async (req, res) => {
     {
       $project: {
         project: {
-          _id: 1,
-          name: 1,
-          description: 1,
-          members: 1,
-          createdAt: 1,
-          createdBy: 1,
+          _id: '$projects._id',
+          name: '$projects.name',
+          description: '$projects.description',
+          members: '$projects.members',
+          createdAt: '$projects.createdAt',
+          createdBy: '$projects.createdBy',
         },
         role: 1,
         _id: 0,

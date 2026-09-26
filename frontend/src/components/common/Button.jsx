@@ -3,21 +3,23 @@ import { Loader2 } from 'lucide-react';
 
 const variants = {
   primary:
-    'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/20 border border-indigo-500/30',
+    'bg-[#0d0f14] hover:bg-[#1a1d24] text-white shadow-sm border border-black/10 font-semibold',
+  lime:
+    'bg-[#e6fd53] hover:bg-[#d9f13e] text-[#0d0f14] border border-[#d4ed34] font-bold shadow-sm',
   secondary:
-    'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/60',
+    'bg-white hover:bg-[#f1f3f6] text-[#0e1116] border border-[#e5e8ec] shadow-sm font-semibold',
   danger:
-    'bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/20 border border-rose-500/30',
+    'bg-rose-600 hover:bg-rose-700 text-white shadow-sm font-semibold',
   ghost:
-    'bg-transparent hover:bg-slate-800/60 text-slate-300 hover:text-white',
+    'bg-transparent hover:bg-[#e5e8ec]/60 text-[#0e1116]',
   outline:
-    'bg-transparent hover:bg-slate-800/40 text-slate-300 border border-slate-700 hover:border-slate-600',
+    'bg-transparent hover:bg-white text-[#0e1116] border border-[#e5e8ec] shadow-sm',
 };
 
 const sizes = {
-  sm: 'px-3 py-1.5 text-xs rounded-lg gap-1.5',
-  md: 'px-4 py-2 text-sm rounded-xl gap-2',
-  lg: 'px-5 py-2.5 text-base rounded-xl gap-2.5',
+  sm: 'px-3.5 py-1.5 text-xs rounded-full gap-1.5',
+  md: 'px-5 py-2 text-xs sm:text-sm rounded-full gap-2',
+  lg: 'px-6 py-2.5 text-sm sm:text-base rounded-full gap-2.5',
 };
 
 export const Button = ({

@@ -5,7 +5,7 @@ import { Sidebar } from './Sidebar.jsx';
 
 export const AppLayout = () => {
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col">
+    <div className="min-h-screen bg-[#f0f2f5] text-[#0e1116] flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
       <Navbar />
       <div className="flex-1 flex overflow-hidden">
         <Sidebar />

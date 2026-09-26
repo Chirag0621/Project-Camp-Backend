@@ -11,6 +11,7 @@ import {
   verifyEmail,
   resendEmailVerification,
   login,
+  googleLoginOrSignup,
 } from '../controllers/auth.controllers.js';
 import { validate } from '../middlewares/validator.middlewares.js';
 import {
@@ -27,6 +28,7 @@ const router = Router();
 //unsecure route
 router.route('/register').post(userRegisterValidator(), validate, registerUser);
 router.route('/login').post(userLoginValidator(), validate, login);
+router.route('/google').post(googleLoginOrSignup);
 router.route('/verify-email/:verificationToken').get(verifyEmail);
 router.route('/refresh-token').post(refreshAccessToken);
 router

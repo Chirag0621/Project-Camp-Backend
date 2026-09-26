@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useToast } from '../../hooks/useToast.js';
 import { Input } from '../../components/common/Input.jsx';
@@ -12,12 +12,81 @@ export const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const { success, error: toastError } = useToast();
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const from = location.state?.from?.pathname || '/dashboard';
+  const handleGoogleAuth = () => {
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      toastError('Google Client ID is missing. Please set VITE_GOOGLE_CLIENT_ID in your frontend .env file.');
+      return;
+    }
+
+    if (window.google?.accounts?.oauth2) {
+      const client = window.google.accounts.oauth2.initTokenClient({
+        client_id: clientId,
+        scope: 'email profile openid',
+        callback: async (tokenResponse) => {
+          if (tokenResponse?.access_token) {
+            try {
+              setLoading(true);
+              const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+              });
+              const profile = await userInfoRes.json();
+              await loginWithGoogle({
+                email: profile.email,
+                fullName: profile.name,
+                avatar: profile.picture,
+              });
+              success(`Welcome to ProjectCamp, ${profile.name}!`);
+              navigate('/dashboard', { replace: true });
+            } catch (err) {
+              toastError(err.message || 'Google authentication failed');
+            } finally {
+              setLoading(false);
+            }
+          }
+        },
+      });
+      client.requestAccessToken();
+    } else if (window.google?.accounts?.id) {
+      window.google.accounts.id.initialize({
+        client_id: clientId,
+        callback: async (response) => {
+          if (response?.credential) {
+            try {
+              setLoading(true);
+              const base64Url = response.credential.split('.')[1];
+              const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+              const jsonPayload = decodeURIComponent(
+                atob(base64)
+                  .split('')
+                  .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                  .join('')
+              );
+              const profile = JSON.parse(jsonPayload);
+              await loginWithGoogle({
+                email: profile.email,
+                fullName: profile.name || profile.email.split('@')[0],
+                avatar: profile.picture || '',
+              });
+              success(`Welcome to ProjectCamp, ${profile.name}!`);
+              navigate('/dashboard', { replace: true });
+            } catch (err) {
+              toastError(err.message || 'Google authentication failed');
+            } finally {
+              setLoading(false);
+            }
+          }
+        },
+      });
+      window.google.accounts.id.prompt();
+    } else {
+      toastError('Google services are still loading. Please try again in a moment.');
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,7 +106,8 @@ export const LoginPage = () => {
 
       await login(payload);
       success('Logged in successfully!');
-      navigate(from, { replace: true });
+      // After successful login, redirect user to Landing Page per requirements
+      navigate('/', { replace: true });
     } catch (err) {
       setError(err.message);
       toastError(err.message);
@@ -47,24 +117,60 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden">
-      {/* Background ambient lighting */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 left-1/3 w-64 h-64 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="w-full max-w-md flex flex-col items-center mb-8 z-10">
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-xl shadow-indigo-600/30 mb-3">
-          <FolderKanban className="w-7 h-7 text-white" />
+    <div className="min-h-screen bg-[#f0f2f5] flex flex-col justify-center items-center px-4 py-12 relative font-['Plus_Jakarta_Sans',sans-serif]">
+      <Link
+        to="/"
+        className="w-full max-w-md flex flex-col items-center mb-8 z-10 group select-none text-center cursor-pointer transition-transform hover:-translate-y-0.5"
+        title="Return to Landing Page"
+      >
+        <div className="w-12 h-12 rounded-2xl bg-[#0d0f14] text-[#e6fd53] flex items-center justify-center shadow-lg shadow-black/10 mb-3.5 group-hover:scale-105 transition-transform">
+          <FolderKanban className="w-6 h-6" />
         </div>
-        <h1 className="text-2xl font-extrabold text-slate-100 tracking-tight">
+        <h1 className="text-3xl font-extrabold text-[#0e1116] tracking-tight group-hover:text-black transition-colors">
           Welcome to ProjectCamp
         </h1>
-        <p className="text-xs text-slate-400 mt-1">
+        <p className="text-xs text-[#64748b] mt-1.5 text-center">
           Sign in to manage projects, tasks, and collaborate with your team.
         </p>
-      </div>
+      </Link>
 
-      <div className="w-full max-w-md glass-panel rounded-2xl p-8 border border-slate-800 shadow-2xl z-10">
+      <div className="w-full max-w-md bg-white rounded-3xl p-8 border border-[#e5e8ec] shadow-xl z-10">
+        {/* Continue with Google Button */}
+        <button
+          type="button"
+          onClick={handleGoogleAuth}
+          className="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-full bg-white hover:bg-[#f8fafc] text-[#0e1116] border border-[#e5e8ec] hover:border-[#cbd5e1] font-semibold text-xs sm:text-sm shadow-xs transition-all duration-200 active:scale-[0.98] select-none mb-4 cursor-pointer"
+        >
+          <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24">
+            <path
+              fill="#4285F4"
+              d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"
+            />
+            <path
+              fill="#34A853"
+              d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"
+            />
+            <path
+              fill="#FBBC05"
+              d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
+            />
+            <path
+              fill="#EA4335"
+              d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
+            />
+          </svg>
+          <span>Continue with Google</span>
+        </button>
+
+        {/* Divider */}
+        <div className="relative flex items-center mb-4">
+          <div className="flex-grow border-t border-[#e5e8ec]"></div>
+          <span className="flex-shrink mx-3 text-[10px] font-bold text-[#94a3b8] uppercase tracking-wider">
+            or continue with credentials
+          </span>
+          <div className="flex-grow border-t border-[#e5e8ec]"></div>
+        </div>
+
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Input
             label="Email or Username"
@@ -89,7 +195,7 @@ export const LoginPage = () => {
             <div className="flex justify-end mt-1">
               <Link
                 to="/forgot-password"
-                className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+                className="text-xs text-[#64748b] hover:text-[#0e1116] transition-colors"
               >
                 Forgot password?
               </Link>
@@ -97,7 +203,7 @@ export const LoginPage = () => {
           </div>
 
           {error && (
-            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-300">
+            <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-medium">
               {error}
             </div>
           )}
@@ -114,11 +220,11 @@ export const LoginPage = () => {
           </Button>
         </form>
 
-        <div className="pt-6 mt-6 border-t border-slate-800/80 text-center text-xs text-slate-400">
+        <div className="pt-6 mt-6 border-t border-[#f0f2f5] text-center text-xs text-[#64748b]">
           Don't have an account?{' '}
           <Link
             to="/register"
-            className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors"
+            className="text-[#0e1116] hover:underline font-bold transition-colors"
           >
             Create account
           </Link>

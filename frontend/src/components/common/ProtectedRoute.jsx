@@ -9,7 +9,7 @@ export const ProtectedRoute = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-[#f0f2f5] flex items-center justify-center">
         <Spinner size="lg" text="Loading session..." />
       </div>
     );

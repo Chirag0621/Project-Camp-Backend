@@ -11,6 +11,7 @@ import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage.jsx';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage.jsx';
 import { VerifyEmailPage } from './pages/auth/VerifyEmailPage.jsx';
 
+import { LandingPage } from './pages/LandingPage.jsx';
 import { DashboardPage } from './pages/dashboard/DashboardPage.jsx';
 import { ProjectDetailsPage } from './pages/projects/ProjectDetailsPage.jsx';
 import { NotFoundPage } from './pages/NotFoundPage.jsx';
@@ -21,6 +22,9 @@ export default function App() {
       <ToastProvider>
         <AuthProvider>
           <Routes>
+            {/* Public Landing Page */}
+            <Route path="/" element={<LandingPage />} />
+
             {/* Public Authentication Routes */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
@@ -36,7 +40,6 @@ export default function App() {
                 </ProtectedRoute>
               }
             >
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/projects/:projectId" element={<ProjectDetailsPage />} />
             </Route>

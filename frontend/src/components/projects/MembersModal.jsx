@@ -90,7 +90,7 @@ export const MembersModal = ({ isOpen, onClose, projectId, currentUserRole }) =>
       {isAdmin && (
         <form
           onSubmit={handleAddMember}
-          className="mb-6 p-4 rounded-xl bg-slate-900/60 border border-slate-800 flex flex-col sm:flex-row gap-3 items-end"
+          className="mb-6 p-4 rounded-2xl bg-[#f8f9fb] border border-[#e5e8ec] flex flex-col sm:flex-row gap-3 items-end"
         >
           <div className="flex-1 w-full">
             <Input
@@ -105,14 +105,14 @@ export const MembersModal = ({ isOpen, onClose, projectId, currentUserRole }) =>
           </div>
 
           <div className="w-full sm:w-36 flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+            <label className="text-xs font-semibold text-[#0e1116] tracking-tight">
               Role
             </label>
             <select
               value={role}
               onChange={(e) => setRole(e.target.value)}
               disabled={submitting}
-              className="w-full rounded-xl bg-slate-900/90 border border-slate-800 text-slate-100 text-sm py-2.5 px-3 focus:outline-none focus:ring-2 focus:border-indigo-500 focus:ring-indigo-500/20"
+              className="w-full rounded-2xl bg-white border border-[#e5e8ec] text-[#0e1116] text-sm py-2.5 px-3.5 focus:outline-none focus:ring-2 focus:border-[#0d0f14] focus:ring-black/5"
             >
               <option value={UserRolesEnum.MEMBER}>Member</option>
               <option value={UserRolesEnum.PROJECT_ADMIN}>Project Admin</option>
@@ -137,16 +137,16 @@ export const MembersModal = ({ isOpen, onClose, projectId, currentUserRole }) =>
           <Spinner text="Loading project members..." />
         </div>
       ) : members.length === 0 ? (
-        <p className="text-center text-sm text-slate-500 py-6">
+        <p className="text-center text-sm text-[#9ca3af] py-6">
           No members found in this project.
         </p>
       ) : (
-        <div className="flex flex-col divide-y divide-slate-800/80 max-h-72 overflow-y-auto">
+        <div className="flex flex-col divide-y divide-[#f0f2f5] max-h-72 overflow-y-auto">
           {members.map((m) => {
             const memberUser = m.user || {};
             const roleMeta = ROLE_CONFIG[m.role] || {
               label: m.role,
-              badge: 'bg-slate-500/15 text-slate-300 border-slate-500/30',
+              badge: 'bg-[#f1f3f6] text-[#4b5563] border-[#e2e6eb]',
             };
 
             return (
@@ -155,14 +155,14 @@ export const MembersModal = ({ isOpen, onClose, projectId, currentUserRole }) =>
                 className="py-3 flex items-center justify-between gap-3"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center font-bold text-xs text-indigo-300">
+                  <div className="w-9 h-9 rounded-full bg-[#0d0f14] text-[#e6fd53] border border-black/10 flex items-center justify-center font-bold text-xs shadow-xs">
                     {getInitials(memberUser.fullName || memberUser._username || 'U')}
                   </div>
                   <div>
-                    <div className="text-sm font-semibold text-slate-200">
+                    <div className="text-sm font-bold text-[#0e1116]">
                       {memberUser.fullName || memberUser._username || 'Unnamed'}
                     </div>
-                    <div className="text-xs text-slate-400">
+                    <div className="text-xs text-[#64748b]">
                       @{memberUser._username || 'user'}
                     </div>
                   </div>
@@ -173,7 +173,7 @@ export const MembersModal = ({ isOpen, onClose, projectId, currentUserRole }) =>
                     <select
                       value={m.role}
                       onChange={(e) => handleRoleChange(memberUser._id, e.target.value)}
-                      className="rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-300 px-2 py-1.5 focus:outline-none focus:ring-1 focus:border-indigo-500"
+                      className="rounded-xl bg-white border border-[#e5e8ec] text-xs font-medium text-[#0e1116] px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:border-[#0d0f14]"
                     >
                       <option value={UserRolesEnum.MEMBER}>Member</option>
                       <option value={UserRolesEnum.PROJECT_ADMIN}>Project Admin</option>
@@ -186,7 +186,7 @@ export const MembersModal = ({ isOpen, onClose, projectId, currentUserRole }) =>
                   {isAdmin && (
                     <button
                       onClick={() => handleRemoveMember(memberUser._id)}
-                      className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
+                      className="p-1.5 text-[#9ca3af] hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
                       title="Remove member"
                     >
                       <Trash2 className="w-4 h-4" />
