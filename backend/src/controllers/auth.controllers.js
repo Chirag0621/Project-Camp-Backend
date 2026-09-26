@@ -22,6 +22,15 @@ const generateAccessandRefreshTokens = async (userId) => {
   }
 };
 
+const getCookieOptions = () => {
+  const isProduction = process.env.NODE_ENV === 'production';
+  return {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
+  };
+};
+
 const registerUser = asyncHandler(async (req, res) => {
   const { email, username, password, role } = req.body;
 
@@ -103,10 +112,7 @@ const login = asyncHandler(async (req, res) => {
     '-password -refreshToken -emailVerificationToken -emailVerificationExpiry'
   );
 
-  const options = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-  };
+  const options = getCookieOptions();
 
   return res
     .status(200)
@@ -138,10 +144,7 @@ const logoutUser = asyncHandler(async (req, res) => {
       new: true,
     }
   );
-  const options = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-  };
+  const options = getCookieOptions();
   return res
     .status(200)
     .clearCookie('accessToken', options)
@@ -251,10 +254,7 @@ const refreshAccessToken = asyncHandler(async(req, res) => {
       throw new ApiError(401, "Refresh token is expired");
     }
 
-    const options = {
-      httpOnly: true,
-      secure: true
-    }
+    const options = getCookieOptions();
 
     const {accessToken, refreshToken: newRefreshToken } = await generateAccessandRefreshTokens(user._id);
 
@@ -423,10 +423,7 @@ const googleLoginOrSignup = asyncHandler(async (req, res) => {
     '-password -refreshToken -emailVerificationToken -emailVerificationExpiry'
   );
 
-  const options = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-  };
+  const options = getCookieOptions();
 
   return res
     .status(200)
